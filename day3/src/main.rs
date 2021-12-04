@@ -4,19 +4,6 @@ use itertools::{self, Itertools};
 fn main() -> anyhow::Result<()> {
     let lines = include_str!("input.txt").lines();
 
-    /*let counts = counts(lines.clone());
-
-    let most_common = counts
-        .clone()
-        .map(|(zeros, ones)| if ones >= zeros { '1' } else { '0' })
-        .collect::<Vec<char>>();
-    let least_common = counts
-        .map(|(zeros, ones)| if ones >= zeros { '0' } else { '1' })
-        .collect::<Vec<char>>();
-
-    println!("most common bits: {:?}", &most_common);
-    println!("least common bits: {:?}", &least_common);*/
-
     let oxy_rating = rating(lines.clone().collect::<Vec<&str>>(), true);
     println!("oxy_rating {}", oxy_rating);
     let co_rating = rating(lines.collect::<Vec<&str>>(), false);
