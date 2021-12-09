@@ -4,28 +4,34 @@ use itertools::{self, izip, Itertools};
 
 struct Square {
     height: u8,
-    left: Option<Rc<RefCell<Square>>>,
-    right: Option<Rc<RefCell<Square>>>,
-    up: Option<Rc<RefCell<Square>>>,
-    down: Option<Rc<RefCell<Square>>>,
+    w: Option<Rc<RefCell<Square>>>,
+    e: Option<Rc<RefCell<Square>>>,
+    n: Option<Rc<RefCell<Square>>>,
+    s: Option<Rc<RefCell<Square>>>,
 }
 
 impl Square {
-    fn partial(height: u8) -> Square {
+    fn from_height(height: u8) -> Square {
         Square {
             height,
-            left: None,
-            right: None,
-            up: None,
-            down: None,
+            w: None,
+            e: None,
+            n: None,
+            s: None,
         }
     }
     //fn from_slice
+    fn is_local_minimum(&self) -> bool {
+        let non_center = &[self.n, self.w, self.e, self.s];
+
+        non_center.iter().all(|&v| v > self.height)
+    }
 }
 
 struct Board(Vec<Vec<Square>>);
 
 impl Board {
+    /*
     fn from_u8(map: &[&[u8]]) -> Board {
         //let mut lines = Vec::with_capacity(map[0].len());
 
@@ -39,6 +45,37 @@ impl Board {
             .collect();
 
         Board(lines)
+    }*/
+
+    fn from_padded(map: Vec<Vec<u8>>) -> Board {
+        Board(
+            map.windows(3)
+                .map(|three_lines| {
+                    let top = &three_lines[0];
+                    let vmid = &three_lines[1];
+                    let bot = &three_lines[2];
+
+                    izip!(top, vmid, bot)
+                        .tuple_windows::<(_, _, _)>()
+                        .map(|(left, hmid, right)| {
+                            let n = *hmid.0;
+                            let w = *left.1;
+                            let c = *hmid.1;
+                            let e = *right.1;
+                            let s = *hmid.2;
+
+                            Square {
+                                height: c,
+                                w,
+                                e,
+                                n,
+                                s,
+                            }
+                        })
+                        .collect_vec()
+                })
+                .collect::<Vec<Vec<Square>>>(),
+        )
     }
 }
 
@@ -73,6 +110,9 @@ fn main() -> anyhow::Result<()> {
         .chain(iter::once(pad_line(width)))
         .collect::<Vec<Vec<u8>>>();
 
+    let board = Board::from_padded(padded);
+
+    /*
     let mut minima = vec![];
     padded.windows(3).for_each(|three_lines| {
         let top = &three_lines[0];
@@ -107,9 +147,11 @@ fn main() -> anyhow::Result<()> {
                 }
             });
     });
+    */
+    let minima = board.0.iter().flatten().filter(|&sq| sq.is_local_minimum());
 
     // Code here
-    let answer: u32 = minima.iter().map(|&v| *v as u32 + 1).sum();
+    let answer: u32 = minima.map(|v| v.height as u32 + 1).sum();
 
     println!("{}", answer);
     Ok(())
