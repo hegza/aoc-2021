@@ -1,4 +1,4 @@
-use itertools::{self, izip, Itertools};
+use itertools::{self, Itertools};
 
 #[derive(Clone, PartialEq)]
 enum Energy {
@@ -27,9 +27,7 @@ impl Board {
                         if *l + 1 > 9 {
                             *elem = Energy::Flashing;
                             flashed.push((x + x0, y + y0));
-                            //println!("({}, {}) will flash", x, y);
                         } else {
-                            //println!("({}, {})", x, y);
                             *l += 1;
                         }
                     }
@@ -37,7 +35,6 @@ impl Board {
                 }
             }
         }
-        //println!();
 
         let mut flash_count = flashed.len();
 
@@ -46,7 +43,6 @@ impl Board {
             let y0 = (y as isize - 1).max(0) as usize;
             let x1 = (x + 1).min(self.vals[0].len() - 1);
             let y1 = (y + 1).min(self.vals.len() - 1);
-            //println!("flashing ({}, {}) {} {} {} {}", x, y, x0, x1, y0, y1);
             flash_count += self.increase_energy_in_area(x0, x1, y0, y1);
         }
         flash_count
@@ -112,11 +108,7 @@ fn main() -> anyhow::Result<()> {
             println!("{}", step + 1);
             break;
         }
-        /*board.print();
-        println!();
-        */
     }
 
-    //println!("{}", flash_count);
     Ok(())
 }
