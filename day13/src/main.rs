@@ -1,5 +1,3 @@
-use itertools::{self, Itertools};
-
 fn fold(map: &Vec<Vec<char>>, axis: char, n: usize) -> Vec<Vec<char>> {
     match axis {
         'y' => {
@@ -36,6 +34,18 @@ fn fold(map: &Vec<Vec<char>>, axis: char, n: usize) -> Vec<Vec<char>> {
     }
 }
 
+fn count_dots(map: &Vec<Vec<char>>) -> usize {
+    let mut count = 0;
+    for line in map {
+        for c in line {
+            if c == &'#' {
+                count += 1;
+            }
+        }
+    }
+    count
+}
+
 fn main() -> anyhow::Result<()> {
     let mut lines = include_str!("input.txt").lines();
     let mut dots = Vec::with_capacity(877);
@@ -67,8 +77,6 @@ fn main() -> anyhow::Result<()> {
         folds.push((axis, n));
     }
 
-    /*println!("{:?}", dots);
-    println!("{:?}", folds);*/
     let hmax = dots.iter().map(|co| co.0).max().unwrap();
     let vmax = dots.iter().map(|co| co.1).max().unwrap();
 
@@ -77,8 +85,6 @@ fn main() -> anyhow::Result<()> {
     for dot in dots {
         map[dot.1][dot.0] = '#';
     }
-
-    //println!("{:?}", map);
 
     for f in folds {
         map = fold(&map, f.0, f.1);
@@ -90,20 +96,5 @@ fn main() -> anyhow::Result<()> {
         println!()
     }
 
-    //let answer = count_dots(&map);
-
-    //println!("{}", answer);
     Ok(())
-}
-
-fn count_dots(map: &Vec<Vec<char>>) -> usize {
-    let mut count = 0;
-    for line in map {
-        for c in line {
-            if c == &'#' {
-                count += 1;
-            }
-        }
-    }
-    count
 }
